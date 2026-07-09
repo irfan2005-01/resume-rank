@@ -1,0 +1,79 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  RECRUITER
+  VIEWER
+}
+
+enum CandidateStatus {
+  NEW
+  SCREENING
+  SHORTLISTED
+  REJECTED
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  passwordHash  String    // For secure email+password auth
+  role          Role      @default(RECRUITER) // Server-side RBAC enforcement [cite: 195]
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  jobs          Job[]     // A recruiter can manage multiple job openings
+}
+
+model Job {
+  id          String      @id @default(cuid())
+  title       String
+  description String      @db.Text
+  department  String?
+  location    String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  recruiterId String
+  recruiter   User        @relation(fields: [recruiterId], references: [id], onDelete: Cascade)
+  candidates  Candidate[]
+}
+
+model Candidate {
+  id          String          @id @default(cuid())
+  name        String
+  email       String
+  phone       String?
+  resumeUrl   String          // Secure link to your cloud/Supabase storage
+  status      CandidateStatus @default(NEW)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+  deletedAt   DateTime?       // Soft-delete capability for recovery data safety [cite: 204]
+
+  // Relations
+  jobId       String
+  job         Job             @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  evaluation  AIEvaluation?
+
+  @@index([jobId])            // High-weight index to keep dashboard queries lightning fast [cite: 208]
+  @@index([status])
+}
+
+model AIEvaluation {
+  id                 String    @id @default(cuid())
+  matchScore         Int       // 0 to 100 percentage tracking
+  summary            String    @db.Text // 2-sentence match summary [cite: 80]
+  skillsMatched      String[]  // Structured arrays extracted from LLM
+  gapsIdentified     String[]  
+  interviewQuestions String[]  // Dynamic screening questions [cite: 80]
+  createdAt          DateTime  @default(now())
+
+  // Relations
+  candidateId        String    @unique
+  candidate          Candidate @relation(fields: [candidateId], references: [id], onDelete: Cascade)
+}

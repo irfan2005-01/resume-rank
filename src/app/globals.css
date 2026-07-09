@@ -1,26 +1,61 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+/* Handbook Rule: Rigid 2px offset visible focus ring for full keyboard operability */
+:focus-visible {
+  outline: none;
+  ring: 2px;
+  --tw-ring-color: #6366f1; /* indigo-500 */
+  ring-offset: 2px;
+  ring-offset-color: #0a0a0a; /* neutral-950 */
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: #0a0a0a; /* neutral-950 */
+  color: #f5f5f5; /* neutral-100 */
+  font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background-color: rgba(99, 102, 241, 0.3); /* indigo-500/30 */
+}
+
+/* Restrained Design Systems (Linear/Stripe Style) */
+.dashboard-card {
+  border-radius: 0.75rem; /* rounded-xl */
+  border: 1px solid #262626; /* neutral-800 */
+  background-color: rgba(23, 23, 23, 0.5); /* neutral-900/50 */
+  padding: 1.5rem; /* p-6 */
+  backdrop-filter: blur(8px); /* backdrop-blur-sm */
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0.5rem; /* rounded-lg */
+  background-color: #f5f5f5; /* neutral-100 */
+  padding-left: 1rem;
+  padding-right: 1rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.5rem;
+  font-size: 0.875rem; /* text-sm */
+  font-weight: 500;
+  color: #0a0a0a; /* neutral-950 */
+  transition: all 0.2s;
+  min-height: 44px; /* Handbook Rule: Min tap targets */
+}
+
+.btn-primary:hover {
+  background-color: #e5e5e5; /* neutral-200 */
+}
+
+.btn-primary:active {
+  transform: scale(0.98);
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
 }
