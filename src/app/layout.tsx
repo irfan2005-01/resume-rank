@@ -7,26 +7,20 @@ export const metadata: Metadata = {
   description: "AI-Powered Smart Candidate Matcher",
 };
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode;
-}>) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className="h-full bg-slate-950 text-slate-50">
-      <body className="h-full antialiased font-sans">
-        <div className="min-h-screen flex">
-          {/* Persistent Sidebar Navigation */}
-          <Sidebar />
+    <div className="flex min-h-screen bg-black text-white overflow-x-hidden">
+      {/* Sidebar - Hidden on tiny screens, or collapses */}
+      <aside className="hidden md:block w-64 border-r border-zinc-900 p-6 flex-shrink-0">
+        {/* Your sidebar content */}
+      </aside>
 
-          {/* Main Content Area Frame Wrapper */}
-          <div className="flex-1 pl-64 flex flex-col">
-            <main className="p-8 max-w-7xl w-full mx-auto">
-              {children}
-            </main>
-          </div>
+      {/* Main Content Area - Allows horizontal sliding on mobile if content overflows */}
+      <main className="flex-1 min-w-0 p-4 md:p-8 overflow-x-auto selection:bg-indigo-500/30">
+        <div className="max-w-7xl mx-auto w-full">
+          {children}
         </div>
-      </body>
-    </html>
+      </main>
+    </div>
   );
 }

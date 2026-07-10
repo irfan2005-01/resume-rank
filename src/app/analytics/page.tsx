@@ -2,7 +2,7 @@ import React from "react";
 import { PrismaClient } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
 import pg from "pg";
-import { BarChart3, PieChart, TrendingUp, Users, Target, ShieldCheck } from "lucide-react";
+import { BarChart3, PieChart, Users, Target, ShieldCheck } from "lucide-react";
 
 const pool = new pg.Pool({ connectionString: process.env.DATABASE_URL });
 const adapter = new PrismaPg(pool);
@@ -25,17 +25,14 @@ async function getAnalyticsData() {
       .map(c => c.evaluation?.matchScore)
       .filter((s): s is number => typeof s === "number");
 
-    // 1. Calculate Score Distribution Buckets
     const highMatch = scores.filter(s => s >= 85).length;
     const midMatch = scores.filter(s => s >= 70 && s < 85).length;
     const lowMatch = scores.filter(s => s < 70).length;
 
-    // 2. Calculate Status Splits
     const shortlisted = candidates.filter(c => c.status === "SHORTLISTED").length;
     const pending = candidates.filter(c => c.status === "NEW").length;
     const rejected = candidates.filter(c => c.status === "REJECTED").length;
 
-    // 3. System Average
     const systemAverage = scores.length > 0 
       ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) 
       : 0;
@@ -62,7 +59,6 @@ async function getAnalyticsData() {
 export default async function AnalyticsPage() {
   const data = await getAnalyticsData();
 
-  // Percentage Helpers for CSS Grid Progress Bars
   const getPercent = (value: number) => 
     data.totalApplicants > 0 ? Math.round((value / data.totalApplicants) * 100) : 0;
 
@@ -76,9 +72,9 @@ export default async function AnalyticsPage() {
         </p>
       </div>
 
-      {/* Top Insights Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-        <div className="bg-[#030303] border border-zinc-900 rounded-2xl p-6">
+      {/* TOP INSIGHTS - FLEX SLIDABLE ON MOBILE, GRID ON DESKTOP */}
+      <div className="flex md:grid md:grid-cols-3 gap-5 overflow-x-auto md:overflow-visible pb-3 md:pb-0 snap-x scrollbar-none">
+        <div className="min-w-[280px] md:min-w-0 flex-shrink-0 snap-start bg-[#030303] border border-zinc-900 rounded-2xl p-6">
           <div className="flex items-center justify-between text-zinc-500">
             <span className="text-xs font-semibold uppercase tracking-wider">Talent Density</span>
             <Users className="h-4 w-4 text-blue-400" />
@@ -87,7 +83,7 @@ export default async function AnalyticsPage() {
           <p className="text-xs text-zinc-500 mt-1">Total profiles indexed via parser</p>
         </div>
 
-        <div className="bg-[#030303] border border-zinc-900 rounded-2xl p-6">
+        <div className="min-w-[280px] md:min-w-0 flex-shrink-0 snap-start bg-[#030303] border border-zinc-900 rounded-2xl p-6">
           <div className="flex items-center justify-between text-zinc-500">
             <span className="text-xs font-semibold uppercase tracking-wider">Avg Pipeline Fitness</span>
             <Target className="h-4 w-4 text-emerald-400" />
@@ -96,7 +92,7 @@ export default async function AnalyticsPage() {
           <p className="text-xs text-zinc-500 mt-1">System-wide AI matching mean</p>
         </div>
 
-        <div className="bg-[#030303] border border-zinc-900 rounded-2xl p-6">
+        <div className="min-w-[280px] md:min-w-0 flex-shrink-0 snap-start bg-[#030303] border border-zinc-900 rounded-2xl p-6">
           <div className="flex items-center justify-between text-zinc-500">
             <span className="text-xs font-semibold uppercase tracking-wider">Shortlist Ratio</span>
             <ShieldCheck className="h-4 w-4 text-purple-400" />
@@ -108,7 +104,7 @@ export default async function AnalyticsPage() {
         </div>
       </div>
 
-      {/* Visual Data Distributions */}
+      {/* VISUAL DATA DISTRIBUTIONS - RESPONDS TO SCREEN WIDTH CHANNELS */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Card 1: AI Score Breakdown */}
         <div className="bg-[#030303] border border-zinc-900 rounded-2xl p-6 space-y-6">
@@ -120,9 +116,9 @@ export default async function AnalyticsPage() {
           <div className="space-y-4">
             {/* High Match */}
             <div className="space-y-1.5">
-              <div className="flex justify-between text-xs font-medium">
+              <div className="flex flex-col sm:flex-row sm:justify-between text-xs font-medium gap-0.5">
                 <span className="text-zinc-300">Top Match Tier (≥ 85%)</span>
-                <span className="text-zinc-400">{data.distribution.highMatch} candidates ({getPercent(data.distribution.highMatch)}%)</span>
+                <span className="text-zinc-500">{data.distribution.highMatch} candidates ({getPercent(data.distribution.highMatch)}%)</span>
               </div>
               <div className="h-2 w-full bg-zinc-900 rounded-full overflow-hidden">
                 <div 
@@ -134,9 +130,9 @@ export default async function AnalyticsPage() {
 
             {/* Mid Match */}
             <div className="space-y-1.5">
-              <div className="flex justify-between text-xs font-medium">
+              <div className="flex flex-col sm:flex-row sm:justify-between text-xs font-medium gap-0.5">
                 <span className="text-zinc-300">Moderate Fit (70% - 84%)</span>
-                <span className="text-zinc-400">{data.distribution.midMatch} candidates ({getPercent(data.distribution.midMatch)}%)</span>
+                <span className="text-zinc-500">{data.distribution.midMatch} candidates ({getPercent(data.distribution.midMatch)}%)</span>
               </div>
               <div className="h-2 w-full bg-zinc-900 rounded-full overflow-hidden">
                 <div 
@@ -148,9 +144,9 @@ export default async function AnalyticsPage() {
 
             {/* Low Match */}
             <div className="space-y-1.5">
-              <div className="flex justify-between text-xs font-medium">
+              <div className="flex flex-col sm:flex-row sm:justify-between text-xs font-medium gap-0.5">
                 <span className="text-zinc-300">Low Alignment (&lt; 70%)</span>
-                <span className="text-zinc-400">{data.distribution.lowMatch} candidates ({getPercent(data.distribution.lowMatch)}%)</span>
+                <span className="text-zinc-500">{data.distribution.lowMatch} candidates ({getPercent(data.distribution.lowMatch)}%)</span>
               </div>
               <div className="h-2 w-full bg-zinc-900 rounded-full overflow-hidden">
                 <div 
