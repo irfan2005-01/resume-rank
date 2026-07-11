@@ -11,6 +11,8 @@
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.8.0",
+    "clsx": "^2.1.1",
+    "framer-motion": "^12.42.2",
     "lucide-react": "^0.400.0",
     "next": "16.2.10",
     "pdf-parse-fork": "^1.2.0",
