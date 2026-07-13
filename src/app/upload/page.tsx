@@ -61,35 +61,58 @@ export default function UploadPage() {
 
       <form onSubmit={handleUpload} className="space-y-4">
         <div className="border-2 border-dashed border-zinc-800 rounded-2xl bg-[#030303] p-12 text-center hover:border-zinc-700 transition-all relative group">
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={handleFileChange}
-            className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-            disabled={loading}
-          />
-          <div className="flex flex-col items-center justify-center space-y-3">
-            <div className="p-4 bg-zinc-950 rounded-xl border border-zinc-800 group-hover:border-zinc-700 transition-colors">
-              <UploadCloud className="h-6 w-6 text-zinc-400 group-hover:text-zinc-200" />
-            </div>
-            {file ? (
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-white flex items-center gap-2 justify-center">
-                  <FileText className="h-4 w-4 text-indigo-400" /> {file.name}
-                </p>
-                <p className="text-xs text-zinc-500">
-                  {(file.size / (1024 * 1024)).toFixed(2)} MB • Ready to process
-                </p>
-              </div>
-            ) : (
-              <div className="space-y-1">
-                <p className="text-sm font-medium text-zinc-300">
-                  Click or drag file to upload
-                </p>
-                <p className="text-xs text-zinc-500">Supported format: PDF documents only</p>
-              </div>
-            )}
-          </div>
+         <input
+  type="file"
+  accept=".pdf"
+  hidden
+  onChange={(e) => {
+    console.log("WORKING");
+    if (e.target.files?.[0]) {
+      setFile(e.target.files[0]);
+    }
+  }}
+/>
+          <label
+  htmlFor="resume-upload"
+  className="flex cursor-pointer flex-col items-center justify-center rounded-2xl border-2 border-dashed border-zinc-800 bg-[#030303] p-12 text-center transition hover:border-zinc-700"
+>
+  <input
+    id="resume-upload"
+    type="file"
+    accept=".pdf"
+    className="hidden"
+    onChange={(e) => {
+      console.log("WORKING");
+
+      if (e.target.files?.[0]) {
+        setFile(e.target.files[0]);
+        setStatus(null);
+      }
+    }}
+  />
+
+  <div className="p-4 rounded-xl border border-zinc-800 bg-zinc-950">
+    <UploadCloud className="h-6 w-6 text-zinc-400" />
+  </div>
+
+  {file ? (
+    <>
+      <p className="mt-4 text-white font-medium">{file.name}</p>
+      <p className="text-xs text-zinc-500">
+        {(file.size / 1024 / 1024).toFixed(2)} MB
+      </p>
+    </>
+  ) : (
+    <>
+      <p className="mt-4 text-white font-medium">
+        Click to select a PDF
+      </p>
+      <p className="text-xs text-zinc-500">
+        PDF only
+      </p>
+    </>
+  )}
+</label>
         </div>
 
         {file && (
